@@ -14,8 +14,10 @@ library('knitr')
 library('maps') # used for state fips code
 library('stringr')
 
-setwd('/Users/ajb/Google Drive/Red Cross/smokealarm')
-opts_knit$set(root.dir = '/Users/ajb/Google Drive/Red Cross/smokealarm')
+repodir <- '/Users/ajb/Documents/github/arc_smoke_alarm/'
+setwd(repodir)
+
+# opts_knit$set(root.dir = repodir)
 opts_knit$set(warning = F)
 
 #' <!-- ####################################### -->
@@ -31,6 +33,8 @@ opts_knit$set(warning = F)
 #' **Codebook:** This [codebook](http://www.census.gov/content/dam/Census/programs-surveys/ahs/tech-documentation/AHS%20Codebook%202013.pdf) is an essential resource.  
 
 #' the **tnewhouse** is the primary table we are interested in.  There are supplementary tables which provide information about other topics.
+
+# data too big to store in repo.  figuring out best place to store it.  not used for anything beyond exploration for now.
 system.time(nh <- fread('data/Census/AHS_2011_PUF/tnewhouse.csv', sep=',', stringsAsFactors=F))
 #system.time(wt <- fread('data/Census/AHS_2011_PUF/tRepwgt.csv', sep=',', stringsAsFactors=F)
 

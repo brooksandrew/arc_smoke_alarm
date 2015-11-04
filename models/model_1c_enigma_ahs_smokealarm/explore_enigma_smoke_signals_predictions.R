@@ -17,10 +17,10 @@ library('rmarkdown')
 
 #' Assumes you have run Brian's code to generate smoke signal model results: https://github.com/enigma-io/smoke-signals-model 
 
-smokesignals_dir <- '/Users/ajb/Documents/github/smoke-signals-model'
-setwd('/Users/ajb/Google Drive/Red Cross/smokealarm/code/ahs_smokealarm_ind')
+repodir <- '/Users/ajb/Documents/github/arc_smoke_alarm/'
+setwd(repodir) # commenting out when knitting 
 
-ss <- data.table(read.csv(paste0(smokesignals_dir, '/data/smoke-alarm-risk-scores.csv')))
+ss <- fread('models/model_1c_enigma_ahs_smokealarm/results/smoke-alarm-risk-scores.csv')
 
 #' ### separating out geographies. block from census tract
 ss[,bg_geoid:=as.character(bg_geoid)]
@@ -52,6 +52,7 @@ source('functions/countyChoro.R')
 mapoverhead <- countyChoroOverhead()
 
 #' #### Quantile binning
+#+ fig.width=12, fig.height=8
 brks <- quantile(ssc[,smoke_alarm_risk], seq(0,1,length.out=10))
 pal <- colorRampPalette(c('gray', '#5A0000'))(length(brks)-1)
 df <- data.frame(ssc)
@@ -59,18 +60,19 @@ countyChoro(ser='smoke_alarm_risk', brks=brks, pal=pal, df=df, mstate=mapoverhea
   theme_bw() + ggtitle('Smoke Alarm Risk: Quantile binning')
 
 #' #### Fixed width binning
+#+ fig.width=12, fig.height=8
 brks <- seq(min(ssc[,smoke_alarm_risk]), max(ssc[,smoke_alarm_risk]), length.out=10)
 pal <- colorRampPalette(c('gray', '#5A0000'))(length(brks)-1)
 df <- data.frame(ssc)
 countyChoro(ser='smoke_alarm_risk', brks=brks, pal=pal, df=df, mstate=mapoverhead$mstate, mapdata=mapoverhead$us.dat) + 
   theme_bw() + ggtitle('Smoke Alarm Risk: Fixed width binning')
 
-#' #### Number of tracts per county
+#' #### Number of blocks per county
+#+ fig.width=12, fig.height=8
 brks <- quantile(ssc[,blocks_per_county], seq(0,1,length.out=10))
 pal <- colorRampPalette(c('gray', '#5A0000'))(length(brks)-1)
 df <- data.frame(ssc)
 countyChoro(ser='blocks_per_county', brks=brks, pal=pal, df=df, mstate=mapoverhead$mstate, mapdata=mapoverhead$us.dat) + 
   theme_bw() + ggtitle('Blocks per county')
 
-
-# rmarkdown::render('/Users/ajb/Google Drive/Red Cross/smokealarm/code/ahs_smokealarm_ind/explore_enigma_smoke_signals_predictions.R')
+# rmarkdown::render('models/model_1c_enigma_ahs_smokealarm/explore_enigma_smoke_signals_predictions.R')
