@@ -95,8 +95,8 @@ hist(sl$prob_death_or_inj_adj)
 # Persist scores associated to geoids #
 #######################################
 
-write.csv(sl[,.(geoid, prob_death_or_inj_adj)], file="results/results_tract.csv")
-
+sl$risk_3a = sl$prob_death_or_inj_adj
+write.csv(sl[,.(geoid, risk_3a)], file="results/results_tract.csv", row.names=FALSE)
 
 # Don't really need this recipe for modeling, but will need it for training.
 # The overhead comes from the join on geoid between incidents and tracts.
