@@ -7,3 +7,4 @@
 
 ### Sketch of requirements for visualization (working doc)
 * https://docs.google.com/document/d/1oJN-QwLVqFHOvrRNtW2KEAkNZ-PuFiqTwa8y3iXx1Sg/edit
+* [Visualization requirements](visualization/requirements.md)
