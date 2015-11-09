@@ -42,7 +42,8 @@ rcC <- rcC[N>25,] #keeping just counties w stable data for ratio
 # PREDICTORS:
 ###################################
 
-# This is the data used with Enigma's 
+# This is the data used with Enigma's model.  Can be downloaded here: https://github.com/enigma-io/ahs-acs
+# direct link: http://enigma-public.s3.amazonaws.com/projects/smoke-alarm-risk/data/acs.csv
 acs <- fread('/Users/ajb/Google Drive/Red Cross/smokealarm/data/Census/acs.csv', stringsAsFactors=F)
 
 # removing duplicate columns
@@ -65,6 +66,7 @@ acs$sum_level <- as.character(unlist(llply(acs$geoid, parse_sum_level)))
 # pulling out state and county for ease of use
 acs$state <- substr(acs$geoid2, 0, 2)
 acs$cnty <- substr(acs$geoid2, 3, 5)
+acs$tract <- substr(acs$geoid2, 6, 11)
 
 acsC <- acs[sum_level=='05000',]
 acsCT <- acs[sum_level=='14000',]
@@ -88,6 +90,10 @@ abtm <- abtm[complete.cases(abtm)]
 
 yvar <- 'alarm_ins_pct'
 xvars <- names(abtm)[which(names(abtm)=='tenure_renter_occupied'):which(names(abtm)=='hdsb_yes')]
+
+# removing xvars with more than 5% missing values.  we should really fill these missing census tracts in with the county numbers.
+xvars <- setdiff(xvars, {a=data.table(missdf(acsCT)); a[misspct>0.05, name]})
+
 
 ## RANDOM FOREST
 xdf <- data.frame(abtm[,xvars, with=F])
@@ -115,13 +121,25 @@ coef(lasso, s=bestlam)
 # PREDICTING 
 ########################################
 
-## Predicting on unvisited census tracts
+## TO DO: Fill in census tract info with county info when tract is missing 
 
-## keeping just counties with no missing data
-acsC_c <- acsC[complete.cases(acsC),]
+## keeping just counties/tracts with no missing data
+acsC_c <- acsC[complete.cases(acsC[,xvars, with=F]),]
+acsCT_c <- acsCT[complete.cases(acsCT[,xvars, with=F]),]
 
-acsC_c$pred_rf <- predict(rf, newdata=acsC_c, type='response')
-acsC_c$pred_lasso <- predict(lasso, s=bestlam, newx=as.matrix(acsC_c[,xvars, with=F]))
+# counties
+acsC_c$pred_rf <- predict(rf, newdata=acsC_c[,xvars, with=F], type='response')
+acsC_c$pred_lasso <- predict(lasso, s=bestlam, newx=as.matrix(acsC_c[,xvars, with=F]), type='response')
+
+# tracts
+acsCT_c$pred_rf <- predict(rf, newdata=acsCT_c[,xvars, with=F], type='response')
+acsCT_c$pred_lasso <- predict(lasso, s=bestlam, newx=as.matrix(acsCT_c[,xvars, with=F]))
+
+acsCT_c[,risk_1a:=(pred_rf+pred_lasso)/2]
+acsCT_c[risk_1a>1, risk_1a:=1]
+
+
+write.table(acsCT_c[, .(risk_1a, state, cnty, tract, geoid2)], file='models/model_1a_RC_homevisit/results/smoke-alarm-risk-scores.csv', row.names=F, sep=',')
 
 
 
@@ -141,6 +159,7 @@ cntymap_merged <- geo_join(cntymap, pred_df, "GEOID", "fips")
 pal <- colorQuantile("Greens", NULL, n = 10)
 popup <- paste0("Probability of home needing smoke alarm in county: ", as.character(cntymap_merged[[plotind]]))
 
+## Does embed in browser with knitr, but takes up 150MB of space and crashes browser.  Does work in when run in RStudio
 if(1==0) {
 leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
