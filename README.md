@@ -1,6 +1,6 @@
-### This repo has moved!
+## This repo has moved!
 * visualization: https://github.com/home-fire-risk/smoke_alarm_map
-* https://github.com/home-fire-risk/smoke_alarm_models
+* modeling: https://github.com/home-fire-risk/smoke_alarm_models
 
 
 
