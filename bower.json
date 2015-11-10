@@ -1,0 +1,11 @@
+{
+  "name": "american-red-cross-smoke-alarm-map",
+  "version": "0.0.0",
+  "dependencies": {
+  	
+  	"topojson": "~1.5.2",
+  	
+  	"jquery": "~2.1.0"	
+  }
+}
+
