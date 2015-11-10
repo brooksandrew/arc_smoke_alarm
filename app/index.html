@@ -1,0 +1,88 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html> <!--<![endif]-->
+<head>
+	<meta charset="UTF-8">
+	<title>American Red Cross Smoke Alarm Map</title>
+	<meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <!-- build:css styles/vendor.css -->
+    <link rel="stylesheet" href="lib/styles/leaflet.css">
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+   	<!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+    <link rel="shortcut icon" href="/favicon.ico">
+
+</head>
+<body>
+
+	<header class="group">
+		<h1 class="appName">
+			American Red Cross Smoke Alarm Map
+		</h1>
+	</header>
+
+    <div class="container">
+    	<div class="map-view">
+            <button class="print-button">Print</button>
+    		<div id="map" class="map"></div>
+    	</div>
+        <div class="rank-list-view">
+            <select>
+                <option selected>Select region</option>
+            </select>
+            <h2>Top 100 Census Tracts</h2>
+            <p>Select a track to view it on the map.</p>
+            <ul>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+                <li><a href="#">Tract no 111 in Wichita, KS</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="tract-details-view">
+        <h2>Tract Details</h2>
+        <p>Details like language spoken, etc.</p>
+    </div>
+	<!-- build:js scripts/vendor.js -->
+	<script src="lib/scripts/leaflet.js"></script>
+  <!-- bower:js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+
+	<script src="bower_components/topojson/topojson.js"></script>
+	<script>
+		// Copyright (c) 2013 Ryan Clark, https://gist.github.com/rclark/5779673
+		L.TopoJSON = L.GeoJSON.extend({
+			addData: function(jsonData){
+				if(jsonData.type === "Topology") {
+					for (key in jsonData.objects){
+						geojson=topojson.feature(jsonData,jsonData.objects[key]);
+						L.GeoJSON.prototype.addData.call(this, geojson);
+					}
+				}else{
+					L.GeoJSON.prototype.addData.call(this, jsonData);
+				}
+			}
+		});
+	</script>
+	<!-- endbower -->
+  <!-- endbuild -->
+
+	<!-- build:js scripts/main.js -->
+	<script src="scripts/main.js"></script>
+	<!-- endbuild -->
+</body>
+</html>
